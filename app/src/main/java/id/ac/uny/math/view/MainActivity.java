@@ -3,12 +3,15 @@ package id.ac.uny.math.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +28,13 @@ public class MainActivity extends AppCompatActivity {
 
     LinearLayout linMain;
     FloatingActionButton btnAdd;
-
+    MaterialButton btnSearch;
+    TextInputEditText searchinput;
+    Button btnDelete;
+    MhsParcel mhsParcel;
+    MhsEntity mhsEntity;
     List<MhsEntity> mhsEntityList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,13 @@ public class MainActivity extends AppCompatActivity {
         intiviews();
         initViewData();
         initaction();
+
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initViewData();
+            }
+        });
     }
 
     void updateView(MhsEntity mhsEntity) {
@@ -56,7 +71,11 @@ public class MainActivity extends AppCompatActivity {
     void initViewData() {
         if (mathDatabase.getMhsDao().getMhs() == null) return;
 
-        mhsEntityList = mathDatabase.getMhsDao().getMhs();
+        if (searchinput == null) {
+            mhsEntityList = mathDatabase.getMhsDao().getMhs();
+        } else {
+            mhsEntityList = mathDatabase.getMhsDao().getMhs(searchinput.getText().toString());
+        }
 
         linMain.removeAllViews();
         for (int i = 0; i < mhsEntityList.size(); i++) {
@@ -67,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     void intiviews() {
         linMain = findViewById(R.id.linMain);
         btnAdd = findViewById(R.id.btnAdd);
+        btnSearch = findViewById(R.id.btnSearch);
+        searchinput = findViewById(R.id.search);
     }
 
     void initaction() {
@@ -77,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, CRUD_REQ);
             }
         });
+
+
     }
 
     @Override
